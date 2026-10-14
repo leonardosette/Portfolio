@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero - The Boys</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://i.pinimg.com/originals/97/6c/9f/976c9f28572614f6975d1609f5590a28.jpg');
+            background-size: cover;
+            background-position: center;
+            animation: backgroundAnim 15s infinite alternate;
+        }
+    
+        @keyframes backgroundAnim {
+            0% { background-position: left; }
+            100% { background-position: right; }
+        }
+    
+        h1 {
+            font-size: 3rem;
+            color: #ff4747; /* Vermelho intenso para representar o caos de The Boys */
+            text-shadow: 2px 2px 10px rgba(255, 71, 71, 0.7);
+            margin-top: 30px;
+            animation: fadeIn 2s ease-out;
+        }
+
+        h2{
+            font-size: 2rem;
+            color: #ff4747; /* Vermelho intenso para representar o caos de The Boys */
+            text-shadow: 2px 2px 10px rgba(255, 71, 71, 0.7);
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        .container {
+            margin: 20px;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+    
+        input, button {
+            margin: 10px;
+            padding: 12px 20px;
+            border: 2px solid #ff4747;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+    
+        input:focus, button:focus {
+            outline: none;
+            border-color: #ff4747;
+            box-shadow: 0 0 10px rgba(255, 71, 71, 0.8);
+        }
+    
+        button {
+            background-color: #960000;
+            cursor: pointer;
+            animation: pulse 1.5s infinite alternate;
+        }
+    
+        button:hover {
+            background-color: #c80000;
+        }
+    
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 71, 71, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 71, 71, 0.7);
+            }
+        }
+    
+        /* GIF de background, por exemplo, do personagem ou da ação */
+        /*.gif-background {
+            width: 100%;
+            height: 200px;
+            background: url('https://i.pinimg.com/originals/e9/ba/0b/e9ba0bfab5b79ff4eee89219c374aea8.gif') no-repeat center center;
+            background-size: cover;
+            margin-bottom: 20px;
+        }*/
+    
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hero Management System</h1>
+        <div>
+            <h2>Add Hero</h2>
+            <input type="text" id="real_name" placeholder="Real Name">
+            <input type="text" id="hero_name" placeholder="Hero Name">
+            <input type="text" id="gender" placeholder="Gender">
+            <input type="number" id="height" placeholder="Height">
+            <input type="number" id="weight" placeholder="Weight">
+            <input type="text" id="birth_date" placeholder="Birth Date (dd/mm/yyyy)">
+            <input type="text" id="birth_place" placeholder="Birth Place">
+            <input type="text" id="powers" placeholder="Powers">
+            <input type="number" id="strength_level" placeholder="Strength Level (0-100)">
+            <input type="number" id="popularity" placeholder="Popularity (0-100)">
+            <input type="text" id="battle_history" placeholder="Battle History" style="display: none;">
+            <button onclick="addHero()">Add Hero</button>
+        </div>
+        <div>
+            <h2>Search Heroes</h2>
+            <input type="text" id="search_hero_name" placeholder="Hero Name">
+            <input type="number" id="search_popularity" placeholder="Popularity (0-100)">
+            <input type="text" id="search_status" placeholder="Status">
+            <button onclick="searchHeroes()">Search</button>
+            <div id="hero_results" style="color: azure;"></div>
+        </div>
+        <div>
+            <h2>Update Hero</h2>
+            <input type="number" id="update_hero_id" placeholder="Hero ID" oninput="fetchHeroById()">
+            <input type="text" id="update_real_name" placeholder="Real Name">
+            <input type="text" id="update_hero_name" placeholder="Hero Name">
+            <input type="text" id="update_gender" placeholder="Gender">
+            <input type="number" id="update_height" placeholder="Height">
+            <input type="number" id="update_weight" placeholder="Weight">
+            <input type="text" id="update_birth_date" placeholder="Birth Date (dd/mm/yyyy)">
+            <input type="text" id="update_birth_place" placeholder="Birth Place">
+            <input type="text" id="update_powers" placeholder="Powers">
+            <input type="number" id="update_strength_level" placeholder="Strength Level (0-100)">
+            <input type="number" id="update_popularity" placeholder="Popularity (0-100)">
+            <input type="text" id="update_battle_history" placeholder="Battle History" style="display: none;">
+            <button onclick="updateHero()">Update Hero</button>
+        </div>
+        <div>
+            <h2>Delete Hero</h2>
+            <input type="number" id="delete_hero_id" placeholder="Hero ID">
+            <button onclick="deleteHero()">Delete Hero</button>
+        </div>
+        <div>
+            <button onclick="goBack()">Back to Home</button>
+        </div>
+    </div>
+    <script>
+        async function addHero() {
+            const hero = {
+                real_name: document.getElementById('real_name').value,
+                hero_name: document.getElementById('hero_name').value,
+                gender: document.getElementById('gender').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                birth_date: document.getElementById('birth_date').value,
+                birth_place: document.getElementById('birth_place').value,
+                powers: document.getElementById('powers').value,
+                strength_level: document.getElementById('strength_level').value,
+                popularity: document.getElementById('popularity').value,
+                battle_history: document.getElementById('battle_history').value
+            };
+            const response = await fetch('/heroes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hero)
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function searchHeroes() {
+            const name = document.getElementById('search_hero_name').value;
+            const popularity = document.getElementById('search_popularity').value;
+            const status = document.getElementById('search_status').value;
+
+            const queryParams = new URLSearchParams();
+            if (name) queryParams.append('name', name);
+            if (popularity) queryParams.append('popularity', popularity);
+            if (status) queryParams.append('status', status);
+
+            const response = await fetch(`/heroes?${queryParams.toString()}`);
+            const heroes = await response.json();
+            const resultsDiv = document.getElementById('hero_results');
+            resultsDiv.innerHTML = '';
+            if (heroes.message) {
+                resultsDiv.textContent = heroes.message; // Exibe a mensagem de "nenhum herÃ³i encontrado"
+            } else {
+                heroes.forEach(hero => {
+                    const heroDiv = document.createElement('div');
+                    heroDiv.innerHTML = `
+                        <p><strong>Hero Name:</strong> ${hero[2]}</p>
+                        <p><strong>Real Name:</strong> ${hero[1]}</p>
+                        <p><strong>Gender:</strong> ${hero[3]}</p>
+                        <p><strong>Height:</strong> ${hero[4]}</p>
+                        <p><strong>Weight:</strong> ${hero[5]}</p>
+                        <p><strong>Birth Date:</strong> ${hero[6]}</p>
+                        <p><strong>Birth Place:</strong> ${hero[7]}</p>
+                        <p><strong>Powers:</strong> ${hero[8]}</p>
+                        <p><strong>Strength Level:</strong> ${hero[9]}</p>
+                        <p><strong>Popularity:</strong> ${hero[10]}</p>
+                        <p><strong>Status:</strong> ${hero[11]}</p>
+                        <p><strong>Battle History:</strong> ${hero[12]}</p>
+                    `;                 
+                    resultsDiv.appendChild(heroDiv);
+                });
+            }
+        }
+
+        async function updateHero() {
+            const hero_id = document.getElementById('update_hero_id').value;
+            const hero = {
+                real_name: document.getElementById('update_real_name').value,
+                hero_name: document.getElementById('update_hero_name').value,
+                gender: document.getElementById('update_gender').value,
+                height: document.getElementById('update_height').value,
+                weight: document.getElementById('update_weight').value,
+                birth_date: document.getElementById('update_birth_date').value,
+                birth_place: document.getElementById('update_birth_place').value,
+                powers: document.getElementById('update_powers').value,
+                strength_level: document.getElementById('update_strength_level').value,
+                popularity: document.getElementById('update_popularity').value,
+                battle_history: document.getElementById('update_battle_history').value
+            };
+            const response = await fetch(`/heroes/${hero_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hero)
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function fetchHeroById() {
+            const hero_id = document.getElementById('update_hero_id').value;
+            if (!hero_id) return; // Não buscar se o campo estiver vazio
+
+            const response = await fetch(`/heroes/${hero_id}`);
+            if (response.ok) {
+                const hero = await response.json();
+
+                document.getElementById('update_real_name').value = hero.real_name || '';
+                document.getElementById('update_hero_name').value = hero.hero_name || '';
+                document.getElementById('update_gender').value = hero.gender || '';
+                document.getElementById('update_height').value = hero.height || '';
+                document.getElementById('update_weight').value = hero.weight || '';
+                document.getElementById('update_birth_date').value = hero.birth_date || '';
+                document.getElementById('update_birth_place').value = hero.birth_place || '';
+                document.getElementById('update_powers').value = hero.powers || '';
+                document.getElementById('update_strength_level').value = hero.strength_level || '';
+                document.getElementById('update_popularity').value = hero.popularity || '';
+                document.getElementById('update_battle_history').value = hero.battle_history || '';
+            } else {
+                alert('Hero not found!');
+            }
+        }
+
+        async function deleteHero() {
+            const hero_id = document.getElementById('delete_hero_id').value;
+            const response = await fetch(`/heroes/${hero_id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        function goBack() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MissÃµes - The Boys</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.alphacoders.com/136/1362150.jpeg');
+            background-size: cover;
+            background-position: center;
+            animation: backgroundAnim 15s infinite alternate;
+            color: #fff;
+        }
+    
+        @keyframes backgroundAnim {
+            0% { background-position: left; }
+            100% { background-position: right; }
+        }
+    
+        h1, h2 {
+            color: #ff4747;
+            text-shadow: 2px 2px 10px rgba(255, 71, 71, 0.7);
+        }
+    
+        h1 {
+            font-size: 3rem;
+            margin-top: 30px;
+            animation: fadeIn 2s ease-out;
+        }
+    
+        h2 {
+            font-size: 2rem;
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+    
+        input, button {
+            margin: 10px;
+            padding: 12px 20px;
+            border: 2px solid #ff4747;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+    
+        input:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 71, 71, 0.8);
+        }
+    
+        button {
+            cursor: pointer;
+            background-color: #960000;
+            animation: pulse 1.5s infinite alternate;
+        }
+    
+        button:hover {
+            background-color: #c80000;
+        }
+    
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 71, 71, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 71, 71, 0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mission Management System</h1>
+        <div>
+            <h2>Add Mission</h2>
+            <input type="text" id="mission_name" placeholder="Mission Name">
+            <input type="text" id="description" placeholder="Description">
+            <input type="number" id="difficulty_level" placeholder="Difficulty Level (0-100)">
+            <input type="text" id="rewards" placeholder="Rewards">
+            <button onclick="addMission()">Add Mission</button>
+        </div>
+        <div>
+            <h2>Search Missions</h2>
+            <input type="text" id="search_mission_name" placeholder="Mission Name">
+            <button onclick="searchMissions()">Search</button>
+            <div id="mission_results"></div>
+        </div>
+        <div>
+            <h2>Update Mission</h2>
+            <input type="number" id="update_mission_id" placeholder="Mission ID">
+            <input type="text" id="update_mission_name" placeholder="Mission Name">
+            <input type="text" id="update_description" placeholder="Description">
+            <input type="number" id="update_difficulty_level" placeholder="Difficulty Level (0-100)">
+            <input type="text" id="update_rewards" placeholder="Rewards">
+            <button onclick="updateMission()">Update Mission</button>
+        </div>
+        <div>
+            <h2>Delete Mission</h2>
+            <input type="number" id="delete_mission_id" placeholder="Mission ID">
+            <button onclick="deleteMission()">Delete Mission</button>
+        </div>
+        <div>
+            <button onclick="goToMissionHero()">Go to Mission-Hero</button>
+        </div>
+        <div>
+            <button onclick="goBack()">Back to Home</button>
+        </div>
+    </div>
+    <script>
+        async function addMission() {
+            const mission = {
+                mission_name: document.getElementById('mission_name').value,
+                description: document.getElementById('description').value,
+                difficulty_level: document.getElementById('difficulty_level').value,
+                rewards: document.getElementById('rewards').value
+            };
+            const response = await fetch('/missions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mission)
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function searchMissions() {
+            const name = document.getElementById('search_mission_name').value;
+            const response = await fetch(`/missions?name=${name}`);
+            const missions = await response.json();
+            const resultsDiv = document.getElementById('mission_results');
+            resultsDiv.innerHTML = '';
+            missions.forEach(mission => {
+                const missionDiv = document.createElement('div');
+                missionDiv.innerHTML = `
+                        <p><strong>Mission Name:</strong> ${mission[1]}</p>
+                        <p><strong>Description:</strong> ${mission[2]}</p>
+                        <p><strong>Difficulty Level:</strong> ${mission[3]}</p>
+                        <p><strong>Rewards:</strong> ${mission[4]}</p>
+                    `;                
+                    resultsDiv.appendChild(missionDiv);
+            });
+        }
+
+        async function updateMission() {
+            const mission_id = document.getElementById('update_mission_id').value;
+            const mission = {
+                mission_name: document.getElementById('update_mission_name').value,
+                description: document.getElementById('update_description').value,
+                difficulty_level: document.getElementById('update_difficulty_level').value,
+                rewards: document.getElementById('update_rewards').value
+            };
+            const response = await fetch(`/missions/${mission_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mission)
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function deleteMission() {
+            const mission_id = document.getElementById('delete_mission_id').value;
+            const response = await fetch(`/missions/${mission_id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        function goToMissionHero() {
+            window.location.href = '/missao-heroi.html';
+        }
+
+        function goBack() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
