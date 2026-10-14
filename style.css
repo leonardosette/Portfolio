@@ -1,0 +1,53 @@
+/* Portfólio de Leonardo Sette: tema "planta de arquitetura" */
+
+/* Tema "planta de arquitetura": papel azulado e tinta marinho */
+:root, [data-bs-theme="light"] {
+  --paper: #eaf0f7; --ink: #10233f; --line: #b7c6da; --blue: #1f4e8c; --mark: #b86e00; --panel: #f6f9fc;
+  --bs-body-bg: var(--paper); --bs-body-color: var(--ink); --bs-link-color: var(--blue);
+}
+[data-bs-theme="dark"] {
+  --paper: #0f2742; --ink: #e6eef8; --line: #2d4a70; --blue: #8fb8f0; --mark: #f0b44c; --panel: #14304f;
+  --bs-body-bg: var(--paper); --bs-body-color: var(--ink); --bs-link-color: var(--blue);
+}
+body {
+  font-family: "IBM Plex Sans", system-ui, sans-serif; line-height: 1.65;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px; background-position: -1px -1px;
+  background-attachment: fixed;
+}
+body::before { content: ""; position: fixed; inset: 0; background: var(--paper); opacity: .88; z-index: -1; }
+h1, h2, h3, .navbar-brand { font-family: "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -.02em; }
+h1 { font-weight: 800; font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1.05; }
+h2 { font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.1rem); }
+a { text-underline-offset: 3px; }
+.navbar { background: color-mix(in srgb, var(--paper) 92%, transparent); border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); }
+.navbar .nav-link { color: var(--ink); }
+.navbar .nav-link:hover { color: var(--blue); }
+section { padding: 4.5rem 0; border-top: 1px solid var(--line); }
+.lead-text { max-width: 60ch; font-size: 1.15rem; }
+.btn-blue { background: var(--blue); color: var(--paper); border: 0; font-weight: 500; }
+.btn-blue:hover { background: var(--ink); color: var(--paper); }
+.btn-line { border: 1px solid var(--ink); color: var(--ink); background: transparent; }
+.btn-line:hover { background: var(--ink); color: var(--paper); }
+.btn:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+
+/* A estrutura do repositório é o elemento de destaque */
+.tree {
+  background: var(--panel); border: 1.5px solid var(--ink); padding: 1.25rem 1.5rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88rem; line-height: 1.8; overflow-x: auto; margin: 0;
+  box-shadow: 6px 6px 0 var(--line);
+}
+.tree .dir { color: var(--blue); }
+.tree .hot { color: var(--mark); }
+
+.proj { display: grid; grid-template-columns: 11rem 1fr auto; gap: 1rem 1.5rem; align-items: start; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+.proj:first-child { border-top: 1.5px solid var(--ink); }
+.proj .materia { font-weight: 500; color: var(--mark); }
+.proj h3 { font-size: 1.25rem; margin: 0 0 .25rem; }
+.proj p { margin: 0; max-width: 60ch; }
+@media (max-width: 767px) { .proj { grid-template-columns: 1fr; gap: .4rem; } }
+
+.video { position: relative; aspect-ratio: 16 / 9; border: 1.5px solid var(--ink); background: var(--panel); box-shadow: 6px 6px 0 var(--line); }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+footer { border-top: 1px solid var(--line); padding: 2rem 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
