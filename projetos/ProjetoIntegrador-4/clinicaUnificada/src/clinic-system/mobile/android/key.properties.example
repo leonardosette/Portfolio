@@ -1,5 +1,0 @@
-# Copie para key.properties (ignorado); preencha localmente.
-storeFile=C:/SCU-signing/upload.jks
-storePassword=PREENCHA_LOCALMENTE
-keyAlias=upload
-keyPassword=PREENCHA_LOCALMENTE
