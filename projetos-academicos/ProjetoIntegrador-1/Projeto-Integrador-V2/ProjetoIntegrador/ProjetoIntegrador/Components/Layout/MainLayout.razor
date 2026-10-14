@@ -1,0 +1,113 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+<header class="top-bar">
+    <div class="container">
+        <a href="/" class="text-decoration-none text-white">
+            <span class="logo d-flex align-items-center">
+                <img src="img/vitalic-icon.png" alt="Vitalic"
+                     style="width:40px;height:40px;margin-right:12px;" />
+                <strong>Vitalic</strong>
+            </span>
+        </a>
+        <div class="auth-area">
+            @if (IsAuthenticated)
+            {
+                <AuthorizeView>
+                    <Authorized Context="auth">
+                        <span>Olá, @auth.User.FindFirst("Nome")?.Value</span>
+                    </Authorized>
+                </AuthorizeView>
+                <form method="post" action="/auth/logout" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-light ms-2">Sair</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn-sm btn-light me-2" href="/login">Login</a>
+                
+            }
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+
+    @Body
+</main>
+
+@code {
+    private string? UserName;
+    private bool IsAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        if (IsAuthenticated)
+
+        {
+            UserName = user.FindFirst("Nome")?.Value
+           ?? user.Identity?.Name
+           ?? user.FindFirst(ClaimTypes.Email)?.Value;
+
+        }
+
+    }
+}
+<style>
+    .top-bar {
+        background-color: #1B4965;
+        color: white;
+        padding: 1rem 0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .auth-area button,
+    .auth-area a {
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
+
+    .main-content {
+        background-color: #F9F9F9;
+        min-height: calc(100vh - 70px);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+
+    a.btn-light {
+        background-color: #5FA8D3;
+        border-color: #5FA8D3;
+        color: white;
+    }
+
+    a.btn-outline-light:hover {
+        background-color: #5FA8D3;
+        border-color: #5FA8D3;
+        color: white;
+    }
+
+    button.btn-outline-light:hover {
+        background-color: #5FA8D3;
+        border-color: #5FA8D3;
+        color: white;
+    }
+</style>

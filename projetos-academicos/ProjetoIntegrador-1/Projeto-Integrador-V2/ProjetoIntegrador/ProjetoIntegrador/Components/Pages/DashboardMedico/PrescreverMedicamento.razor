@@ -1,0 +1,10 @@
+﻿@page "/dash-medico/prescreverMedicamento"
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Medico,Administrador")]
+
+
+<h3>PrescreverMedicamento</h3>

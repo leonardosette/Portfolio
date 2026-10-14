@@ -1,0 +1,111 @@
+﻿@page "/"
+
+<main class="w-100 overflow-hidden">
+    <section class="hero d-flex align-items-center position-relative text-white py-5 py-lg-7">
+        <div class="container-xl position-relative z-2">
+            <div class="row align-items-center g-0 g-lg-5">
+                <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start px-4 px-lg-0">
+                    <h1 class="display-4 fw-bold mb-4 lh-sm">Vitalic simplifica a gestão de <span class="highlight">prontuários</span> e coloca a saúde em primeiro lugar.</h1>
+                    <p class="fs-5 mb-4">Transforme processos clínicos em rotinas ágeis, seguras e 100% em conformidade com a <strong>LGPD</strong>.</p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    </div>
+                </div>
+                <div class="col-lg-6 order-1 order-lg-2 position-relative d-none d-lg-block">
+                    <div class="hero-image h-100 w-100"></div>
+                </div>
+            </div>
+        </div>
+        <div class="gradient-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+    </section>
+    <section class="features py-5">
+        <div class="container-xl">
+            <div class="row text-center g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 h-100 shadow-sm p-4">
+                        <span class="bi bi-shield-lock-fill display-5 text-primary mb-3"></span>
+                        <h3 class="h6 fw-semibold mb-2">Segurança Avançada</h3>
+                        <p class="small text-muted">Criptografia, backups diários e autenticação 2FA para proteger cada detalhe.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 h-100 shadow-sm p-4">
+                        <span class="bi bi-graph-up-arrow display-5 text-primary mb-3"></span>
+                        <h3 class="h6 fw-semibold mb-2">Escalabilidade</h3>
+                        <p class="small text-muted">Infraestrutura cloud para acompanhar desde consultórios até hospitais.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 h-100 shadow-sm p-4">
+                        <span class="bi bi-phone-display display-5 text-primary mb-3"></span>
+                        <h3 class="h6 fw-semibold mb-2">Acesso Mobile</h3>
+                        <p class="small text-muted">Visualize prontuários e exames onde estiver, com interface responsiva.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 h-100 shadow-sm p-4">
+                        <span class="bi bi-bar-chart-line-fill display-5 text-primary mb-3"></span>
+                        <h3 class="h6 fw-semibold mb-2">Relatórios Inteligentes</h3>
+                        <p class="small text-muted">Dados clínicos traduzidos em insights para decisões assertivas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="cta text-center py-5 position-relative text-white">
+        <div class="container-xl position-relative z-2">
+            <h2 class="display-6 fw-bold mb-4">Pronto para levar sua clínica ao próximo nível?</h2>
+            <a href="#" class="btn btn-warning btn-lg px-5 fw-semibold">Entre em Contato Conosco!</a>
+        </div>
+        <div class="gradient-cta position-absolute top-0 start-0 w-100 h-100"></div>
+    </section>
+</main>
+
+<style>
+    .hero {
+        background: linear-gradient(135deg, #003e65 0%, #004b71 40%, #016fa8 100%);
+        min-height: 520px;
+    }
+
+    .hero-image {
+        background: url("https://s0.rbk.ru/v6_top_pics/media/img/0/06/756595029974060.jpg") center/cover no-repeat;
+        clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+        min-height: 520px;
+    }
+    @@media (max-width: 991.98px) {
+        .hero-image {
+            clip-path: none;
+            height: 280px;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+        }
+
+        .hero .row > .col-lg-6.d-none.d-lg-block {
+            display: none !important;
+        }
+    }
+
+    .gradient-overlay {
+        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05), transparent 70%);
+        mix-blend-mode: overlay;
+    }
+
+    .hero .highlight {
+        color: #ffc107;
+    }
+
+    .cta {
+        background: #004b71;
+    }
+
+    .gradient-cta {
+        background: linear-gradient(135deg, rgba(255,255,255,0.03), transparent);
+    }
+
+    .features .card:hover {
+        transform: translateY(-4px);
+        transition: transform .15s ease;
+    }
+</style>
+
+

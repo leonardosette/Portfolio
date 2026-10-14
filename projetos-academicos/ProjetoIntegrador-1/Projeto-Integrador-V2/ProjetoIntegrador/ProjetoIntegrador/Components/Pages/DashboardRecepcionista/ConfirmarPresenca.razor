@@ -1,0 +1,147 @@
+﻿@page "/dash-recepcionista/confirmarPresenca"
+@attribute [Authorize(Roles = "Recepcionista,Administrador")]
+
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
+
+@using Microsoft.EntityFrameworkCore
+@using ProjetoIntegrador.Models
+@using ProjetoIntegrador.Data
+@using Microsoft.AspNetCore.Authorization
+
+@rendermode InteractiveServer
+
+
+<div class="container-lg px-4 py-4">
+    <h2 class="fw-semibold text-center mb-5">
+        <i class="bi bi-person-check-fill me-2 text-primary"></i>
+        Consultas Agendadas por Paciente
+    </h2>
+
+    @if (consultas == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3 text-secondary">Carregando consultas...</p>
+        </div>
+    }
+    else if (!consultas.Any())
+    {
+        <div class="alert alert-info">Nenhuma consulta agendada encontrada.</div>
+    }
+    else
+    {
+        var agrupadasPorPaciente = consultas.GroupBy(c => c.Paciente!.Nome).OrderBy(g => g.Key);
+
+        foreach (var grupo in agrupadasPorPaciente)
+        {
+            <div class="mb-4">
+                <h4 class="fw-bold text-primary">@grupo.Key</h4>
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Médico</th>
+                            <th>Data e Hora</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var consulta in grupo)
+                        {
+                            <tr>
+                                <td>@consulta.Medico?.Nome</td>
+                                <td>@consulta.DataHora.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@consulta.Status</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success me-2"
+                                            @onclick="() => AbrirModalConfirmacao(consulta.Id, true)">
+                                        <i class="bi bi-check2-circle me-1"></i>Confirmar
+                                    </button>
+                                    <button class="btn btn-sm btn-danger"
+                                            @onclick="() => AbrirModalConfirmacao(consulta.Id, false)">
+                                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    <!-- Modal -->
+    @if (mostrarModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@((acaoConfirmar ? "Confirmar" : "Cancelar") + " Consulta")</h5>
+                        <button type="button" class="btn-close" @onclick="FecharModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja @(acaoConfirmar ? "confirmar" : "cancelar") esta consulta?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="FecharModal">Cancelar</button>
+                        <button class="btn @(acaoConfirmar ? "btn-success" : "btn-danger")"
+                                @onclick="ConfirmarOuCancelarConsulta">
+                            Sim, @(acaoConfirmar ? "confirmar" : "cancelar")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Agendamento> consultas = new();
+    private bool mostrarModal = false;
+    private string? idConsultaSelecionada;
+    private bool acaoConfirmar;
+
+    protected override async Task OnInitializedAsync()
+    {
+        consultas = await DbContext.Agendamentos
+            .Include(a => a.Paciente)
+            .Include(a => a.Medico)
+            .Where(a => a.Status == "Agendado")
+            .OrderBy(a => a.DataHora)
+            .ToListAsync();
+    }
+
+    private void AbrirModalConfirmacao(string idConsulta, bool confirmar)
+    {
+        idConsultaSelecionada = idConsulta;
+        acaoConfirmar = confirmar;
+        mostrarModal = true;
+    }
+
+    private void FecharModal()
+    {
+        mostrarModal = false;
+        idConsultaSelecionada = null;
+    }
+
+    private async Task ConfirmarOuCancelarConsulta()
+    {
+        var consulta = await DbContext.Agendamentos.FindAsync(idConsultaSelecionada);
+        if (consulta is not null)
+        {
+            consulta.Status = acaoConfirmar ? "Confirmado" : "Cancelado";
+            await DbContext.SaveChangesAsync();
+            consultas = await DbContext.Agendamentos
+                .Include(a => a.Paciente)
+                .Include(a => a.Medico)
+                .Where(a => a.Status == "Agendado")
+                .OrderBy(a => a.DataHora)
+                .ToListAsync();
+        }
+
+        FecharModal();
+        StateHasChanged();
+    }
+}

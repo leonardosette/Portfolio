@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Controle de Ponto</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="bannerNotificacao"></div>
+    <h1>Sistema de Controle de Ponto</h1>
+    <p id="dataHora"></p>
+    <select id="fusoHorario">
+        <option value="America/Sao_Paulo">Brasília</option>
+        <option value="America/New_York">New York</option>
+        <option value="America/Los_Angeles">Los Angeles</option>
+        <option value="Australia/Sydney">Sydney</option>
+        <option value="Asia/Tokyo">Tokyo</option>
+        <option value="Europe/Moscow">Moscow</option>
+    </select>
+    <button id="baterPonto">Bater Ponto</button>
+    <dialog id="modal">
+        <div id="modalContent">
+            <!-- Ícone de engrenagem -->
+            <span id="close">&times;</span>
+            <p id="modalDataHora"></p>
+    
+            <!-- Engrenagem para abrir opções avançadas -->
+            <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" id="gearIcon" style="position: absolute; top: 10px; right: 10px; cursor: pointer;">
+    
+            <select id="punch-in-select">
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+                <option value="intervalo">Intervalo</option>
+                <option value="voltaIntervalo">Volta do Intervalo</option>
+            </select>
+    
+            <div id="advancedOptions" style="display: none;">
+                <label for="manualDataHora">Alterar Data e Hora:</label>
+                <input type="datetime-local" id="manualDataHora">
+                <textarea id="observacao" placeholder="Adicione uma observação..."></textarea>
+                <textarea id="justificativa" placeholder="Adicione uma justificativa (opcional)..."></textarea>
+                <input type="file" id="arquivo">
+            </div>
+    
+            <button id="punch-in-button">Bater Ponto</button>
+        </div>
+    </dialog>    
+    <script src="../js/index.js"></script>
+</body>
+</html>

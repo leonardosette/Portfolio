@@ -1,0 +1,114 @@
+﻿@page "/dash-recepcionista/cadastrarPessoas"
+@using ProjetoIntegrador.Models
+@using ProjetoIntegrador.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+
+@using ProjetoIntegrador.Components.Layout
+@rendermode InteractiveServer
+
+@inject UserManager<Usuario> UserManager
+@inject NavigationManager Navigation
+@inject ApplicationDbContext Context
+@inject IJSRuntime JS
+
+@attribute [Authorize(Roles = "Recepcionista,Administrador")]
+
+<HeadContent>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <link href="css/register.css" rel="stylesheet" />
+    <script src="js/mask.js"></script>
+</HeadContent>
+
+<div class="register-background">
+    <div class="register-box">
+        <h2>CREATE AN ACCOUNT</h2>
+
+        <EditForm Model="@model" OnValidSubmit="@RegistrarUsuario" class="register-form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <InputText @bind-Value="model.Nome" placeholder="Your Name" class="form-input" />
+            <InputText @bind-Value="model.Email" placeholder="Your Email" class="form-input" />
+            <InputText @bind-Value="model.CPF" placeholder="CPF" class="form-input" oninput="aplicarMascaraCPF(this)" />
+            <InputText @bind-Value="model.Telefone" placeholder="Phone" class="form-input" oninput="aplicarMascaraTelefone(this)" />
+            <InputText @bind-Value="model.Endereco" placeholder="Address" class="form-input" />
+            <InputText @bind-Value="model.Senha" placeholder="Password" type="password" class="form-input" />
+            <InputText @bind-Value="model.ConfirmarSenha" placeholder="Repeat your password" type="password" class="form-input" />
+
+            <select @bind="model.IdPerfil" class="form-input">
+                <option value="">Select Profile</option>
+                @foreach (var perfil in Perfis)
+                {
+                    <option value="@perfil.Id.ToString()">@perfil.Tipo</option>
+                }
+            </select>
+
+            @if (model.IdPerfil == "3")
+            {
+                <InputText @bind-Value="model.CRM" placeholder="CRM" class="form-input" />
+                <InputText @bind-Value="model.Especialidade" placeholder="Specialty" class="form-input" />
+            }
+
+            <button type="submit" class="register-btn">REGISTER</button>
+
+            <div class="login-link">
+                Have already an account? <a href="/login">Login here</a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private RegisterModel model = new();
+    private List<Perfil> Perfis = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Perfis = await Context.Perfis.ToListAsync();
+    }
+
+    private async Task RegistrarUsuario()
+    {
+        var perfil = Perfis.FirstOrDefault(p => p.Id == model.IdPerfil);
+
+        if (perfil is null)
+        {
+            await JS.InvokeVoidAsync("toastr.error", "Selecione um perfil válido.");
+            return;
+        }
+
+        var usuario = new Usuario
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                Nome = model.Nome,
+                CPF = model.CPF,
+                PhoneNumber = model.Telefone,
+                Endereco = model.Endereco,
+                IdPerfil = perfil.Id,
+                CRM = model.CRM,
+                Especialidade = model.Especialidade
+            };
+
+        var resultado = await UserManager.CreateAsync(usuario, model.Senha);
+
+        if (resultado.Succeeded)
+        {
+            await UserManager.AddToRoleAsync(usuario, perfil.Tipo);
+            await JS.InvokeVoidAsync("toastr.success", "Conta criada com sucesso!");
+            model = new();
+
+            // Adicione no final do método HandleRegister:
+
+            Navigation.NavigateTo("/dash-recepcionista?registered=true", true);
+
+        }
+        else
+        {
+            var erros = string.Join("<br/>", resultado.Errors.Select(e => e.Description));
+            await JS.InvokeVoidAsync("toastr.error", erros);
+        }
+    }
+}

@@ -1,0 +1,41 @@
+name: Mobile CI
+on:
+  push:
+    branches: [main]
+    paths: ['src/clinic-system/mobile/**', '.github/workflows/mobile-ci.yml']
+  pull_request:
+    paths: ['src/clinic-system/mobile/**', '.github/workflows/mobile-ci.yml']
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/clinic-system/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.4'
+          channel: stable
+          cache: true
+      - name: Instalar dependências
+        run: flutter pub get
+      - name: Verificar formatação
+        run: dart format --set-exit-if-changed .
+      - name: Análise estática
+        run: flutter analyze
+      - name: Testes unitários e fluxos de interface
+        run: flutter test --coverage
+      - name: Build de APK de desenvolvimento
+        run: flutter build apk --debug --dart-define=SCU_BASE_URL=http://10.0.2.2:8080 --dart-define=SCU_DEV=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scu-paciente-debug
+          path: src/clinic-system/mobile/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7

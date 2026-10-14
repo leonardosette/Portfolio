@@ -1,0 +1,191 @@
+﻿@page "/dash-medico/agendaConsultas"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using ProjetoIntegrador.Data
+@using ProjetoIntegrador.Models
+@using System.Security.Claims
+
+@inject ApplicationDbContext DbContext
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Medico,Administrador")]
+
+@rendermode InteractiveServer
+
+<div class="container-lg px-4 py-4">
+    <h2 class="fw-semibold text-center mb-5">
+        <i class="bi bi-journal-medical me-2 text-primary"></i>
+        Minhas Consultas
+    </h2>
+
+    @if (agendamentos == null)
+    {
+        <div class="alert alert-info text-center">Carregando agendamentos...</div>
+    }
+    else if (!agendamentos.Any())
+    {
+        <div class="alert alert-warning text-center">Nenhuma consulta agendada.</div>
+    }
+    else
+    {
+        var agrupadoPorPaciente = agendamentos
+        .GroupBy(a => a.Paciente?.Nome)
+        .OrderBy(g => g.Key);
+
+        foreach (var grupo in agrupadoPorPaciente)
+        {
+            <h4 class="fw-bold text-primary mt-4">@grupo.Key</h4>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var consulta in grupo)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow rounded-4 border-0">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold text-dark mb-3">
+                                    📅 @consulta.DataHora.ToString("dd/MM/yyyy 'às' HH:mm")
+                                </h5>
+
+                                <p class="mb-2">
+                                    <strong>Status:</strong>
+                                    <span class="badge rounded-pill fw-semibold @GetStatusBadgeClass(consulta.Status)">
+                                        @consulta.Status
+                                    </span>
+                                </p>
+
+                                @if (consulta.TemAnamnese || consulta.TemRelatorio)
+                                {
+                                    <button class="btn btn-outline-primary mt-3 w-100"
+                                            @onclick="() => MostrarDetalhes(consulta)">
+                                        <i class="bi bi-eye-fill me-2"></i>Ver Detalhes
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@if (detalheVisivel && agendamentoDetalhe != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes da Consulta</h5>
+                    <button type="button" class="btn-close" @onclick="FecharDetalhes"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Paciente:</strong> @agendamentoDetalhe.Paciente?.Nome</p>
+                    <p><strong>Data:</strong> @agendamentoDetalhe.DataHora.ToString("dd/MM/yyyy 'às' HH:mm")</p>
+                    <p><strong>Status:</strong> @agendamentoDetalhe.Status</p>
+
+                    @if (anamneseDetalhe != null)
+                    {
+                        <hr />
+                        <h5>Anamnese</h5>
+                        <p><strong>Queixa Principal:</strong> @anamneseDetalhe.QueixaPrincipal</p>
+                        <p><strong>História da Doença Atual:</strong> @anamneseDetalhe.HistoriaDoencaAtual</p>
+                        <p><strong>Histórico Médico:</strong> @anamneseDetalhe.HistoricoMedico</p>
+                        <p><strong>Alergias e Medicamentos:</strong> @anamneseDetalhe.AlergiasEMedicamentos</p>
+                    }
+
+                    @if (relatorioDetalhe != null)
+                    {
+                        <hr />
+                        <h5>Relatório Médico</h5>
+                        <p><strong>Diagnóstico:</strong> @relatorioDetalhe.Diagnostico</p>
+                        <p><strong>Prescrição:</strong> @relatorioDetalhe.Prescricao</p>
+                        <p><strong>Observações:</strong> @relatorioDetalhe.Observacoes</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="FecharDetalhes">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Agendamento> agendamentos;
+    private Anamnese? anamneseDetalhe;
+    private Relatorio? relatorioDetalhe;
+    private Agendamento? agendamentoDetalhe;
+    private bool detalheVisivel = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var medicoId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!string.IsNullOrEmpty(medicoId))
+            {
+                agendamentos = await DbContext.Agendamentos
+                    .Include(a => a.Paciente)
+                    .Where(a => a.IdMedico == medicoId)
+                    .OrderBy(a => a.Paciente.Nome)
+                    .ThenBy(a => a.Status)
+                    .ThenBy(a => a.DataHora)
+                    .ToListAsync();
+
+                var agendamentoIds = agendamentos.Select(a => a.Id).ToList();
+
+                var anamneses = await DbContext.Anamneses
+                    .Where(a => agendamentoIds.Contains(a.IdAgendamento))
+                    .ToListAsync();
+
+                var relatorios = await DbContext.Relatorios
+                    .Where(r => agendamentoIds.Contains(r.IdAgendamento))
+                    .ToListAsync();
+
+                foreach (var ag in agendamentos)
+                {
+                    ag.TemAnamnese = anamneses.Any(x => x.IdAgendamento == ag.Id);
+                    ag.TemRelatorio = relatorios.Any(x => x.IdAgendamento == ag.Id);
+                }
+            }
+        }
+        else
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async void MostrarDetalhes(Agendamento agendamento)
+    {
+        agendamentoDetalhe = agendamento;
+        anamneseDetalhe = await DbContext.Anamneses.FirstOrDefaultAsync(a => a.IdAgendamento == agendamento.Id);
+        relatorioDetalhe = await DbContext.Relatorios.FirstOrDefaultAsync(r => r.IdAgendamento == agendamento.Id);
+        detalheVisivel = true;
+        StateHasChanged();
+    }
+
+    private void FecharDetalhes()
+    {
+        detalheVisivel = false;
+        agendamentoDetalhe = null;
+        anamneseDetalhe = null;
+        relatorioDetalhe = null;
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "confirmado" => "bg-success text-white",
+            "cancelado" => "bg-danger text-white",
+            "agendado" => "bg-warning text-dark",
+            "realizada" => "bg-primary text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+}

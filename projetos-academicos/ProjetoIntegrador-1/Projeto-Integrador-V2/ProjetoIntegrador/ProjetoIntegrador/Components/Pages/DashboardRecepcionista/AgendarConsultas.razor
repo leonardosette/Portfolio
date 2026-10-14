@@ -1,0 +1,138 @@
+﻿@page "/dash-recepcionista/agendarConsultas"
+@attribute [Authorize(Roles = "Recepcionista,Administrador")]
+
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using ProjetoIntegrador.Models
+@using ProjetoIntegrador.Data
+
+<div class="container-lg px-4 py-4">
+    <h2 class="fw-semibold text-center mb-5">
+        <i class="bi bi-calendar2-plus me-2 text-primary"></i>
+        Agendar ou Remarcar Consulta
+    </h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-4">
+                <div class="card-body p-4">
+                    <EditForm Model="agendamento" OnValidSubmit="SalvarAgendamento">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Paciente</label>
+                            <InputSelect class="form-select" @bind-Value="agendamento.IdPaciente">
+                                <option value="">Selecione um paciente</option>
+                                @foreach (var paciente in pacientes)
+                                {
+                                    <option value="@paciente.Id">@paciente.Nome</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Médico</label>
+                            <InputSelect class="form-select" @bind-Value="agendamento.IdMedico">
+                                <option value="">Selecione um médico</option>
+                                @foreach (var medico in medicos)
+                                {
+                                    <option value="@medico.Id">@medico.Nome</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Data e Hora</label>
+                            <input type="datetime-local" class="form-control" @bind="dataHoraSelecionada" min="@MinAgora" />
+                        </div>
+
+                        <div class="text-end">
+                            <button class="btn btn-success px-4" type="submit">
+                                <i class="bi bi-save me-2"></i>Salvar Consulta
+                            </button>
+                        </div>
+                    </EditForm>
+
+                    @if (!string.IsNullOrEmpty(mensagem))
+                    {
+                        <div class="alert alert-success mt-4 rounded-3 shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@mensagem
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(mensagemErro))
+                    {
+                        <div class="alert alert-danger mt-4 rounded-3 shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@mensagemErro
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Agendamento agendamento = new();
+    private List<Usuario> pacientes = new();
+    private List<Usuario> medicos = new();
+    private string? mensagem;
+    private string? mensagemErro;
+    private DateTime dataHoraSelecionada = DateTime.Now;
+
+    private string MinAgora => DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var roleMedicoId = await DbContext.Roles
+            .Where(r => r.Name == "Medico")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        var rolePacienteId = await DbContext.Roles
+            .Where(r => r.Name == "Paciente")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        medicos = await DbContext.Users
+            .Where(u => DbContext.UserRoles.Any(ur => ur.UserId == u.Id && ur.RoleId == roleMedicoId))
+            .ToListAsync();
+
+        pacientes = await DbContext.Users
+            .Where(u => DbContext.UserRoles.Any(ur => ur.UserId == u.Id && ur.RoleId == rolePacienteId))
+            .ToListAsync();
+    }
+
+    private async Task SalvarAgendamento()
+    {
+        if (string.IsNullOrWhiteSpace(agendamento.IdPaciente) || string.IsNullOrWhiteSpace(agendamento.IdMedico))
+        {
+            mensagemErro = "Selecione um paciente e um médico válidos.";
+            return;
+        }
+
+        if (dataHoraSelecionada < DateTime.Now)
+        {
+            mensagemErro = "Datas passadas não podem ser utilizadas para agendamento.";
+            return;
+        }
+
+        agendamento.Id = Guid.NewGuid().ToString();
+        agendamento.DataHora = dataHoraSelecionada;
+        agendamento.Status = "Agendado"; // Status definido automaticamente
+
+        DbContext.Agendamentos.Add(agendamento);
+        await DbContext.SaveChangesAsync();
+
+        mensagem = "Consulta agendada com sucesso!";
+        agendamento = new();
+        dataHoraSelecionada = DateTime.Now;
+    }
+
+}

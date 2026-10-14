@@ -1,0 +1,138 @@
+﻿@page "/dash-admin"
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Administrador")]
+
+<style>
+    .topbar {
+        background-color: #1B4965;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .topbar span {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+    .dashboard-container {
+        padding: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .profile-placeholder {
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+        .profile-placeholder .icon {
+            width: 80px;
+            height: 80px;
+            background-color: #009688;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        .profile-placeholder .line {
+            width: 80%;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+
+    .card-grid {
+        width: 60%; /* era 75%  → centraliza + “engorda” */
+        display: grid;
+        /* passa de 4 para 3 colunas fixas (monitores lg+) */
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px; /* um pouco mais de respiro */
+    }
+
+    .card {
+        border: 2px solid #1B4965;
+        border-radius: 12px;
+        padding: 32px 24px; /* era 20px */
+        text-align: center;
+        cursor: pointer;
+        transition: transform .18s ease;
+        min-height: 180px; /* aumenta altura */
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+    .card-icon {
+        font-size: 42px; /* era 30px */
+        color: #009688;
+        margin-bottom: 14px;
+    }
+
+    .card-label {
+        font-weight: bold;
+        color: #1B4965;
+    }
+
+    .logout-btn {
+        background-color: white;
+        color: #1B4965;
+        border: 1px solid #1B4965;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="profile-placeholder">
+        <div class="icon"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+
+    <div class="card-grid">
+        @foreach (var item in itensDashboard)
+        {
+            <div class="card" @onclick="() => Navegar(item.Url)">
+                <div class="card-icon">@item.Icone</div>
+                <div class="card-label">@item.Titulo</div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private void Navegar(string url)
+    {
+        Navigation.NavigateTo(url);
+    }
+
+
+
+    private class DashItem
+    {
+        public string Titulo { get; set; } = "";
+        public string Url { get; set; } = "#";
+        public string Icone { get; set; } = "📋";
+    }
+
+    private List<DashItem> itensDashboard = new()
+    {
+        new() { Titulo = "Dashboard Paciente", Icone = "📅", Url = "/dash-paciente"},
+        new() { Titulo = "Dashboard Medico", Icone = "🩺", Url = "/dash-medico"},
+        new() { Titulo = "Dashboard Recepcionista", Icone = "💻", Url = "/dash-recepcionista"},
+    };
+}

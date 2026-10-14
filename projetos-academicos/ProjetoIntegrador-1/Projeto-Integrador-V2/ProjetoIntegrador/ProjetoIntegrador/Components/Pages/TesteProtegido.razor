@@ -1,0 +1,21 @@
+@page "/teste-protegido"
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Administrador")]
+
+<h3>Bem-vindo à página protegida!</h3>
+<p>Somente usuários autenticados com a role <strong>Administrador</strong> podem ver isso.</p>
+
+<AuthorizeView Roles="Administrador">
+    <Authorized>
+        <p style="color: green">Você está autenticado como Administrador.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p style="color: red">Você NÃO tem permissão para ver isso.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+

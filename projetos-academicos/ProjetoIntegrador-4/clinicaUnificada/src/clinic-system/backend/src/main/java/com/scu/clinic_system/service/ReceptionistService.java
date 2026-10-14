@@ -1,0 +1,31 @@
+package com.scu.clinic_system.service;
+
+import com.scu.clinic_system.model.Role;
+import com.scu.clinic_system.model.User;
+import com.scu.clinic_system.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class ReceptionistService {
+
+    private final UserRepository userRepository;
+
+    public ReceptionistService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.receptionist)
+                .toList();
+    }
+
+    public Optional<User> findById(UUID id) {
+        return userRepository.findById(id)
+                .filter(u -> u.getRole() == Role.receptionist);
+    }
+}
