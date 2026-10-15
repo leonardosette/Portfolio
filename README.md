@@ -2,7 +2,7 @@
 
 Repositório que reúne meus projetos acadêmicos e a página de apresentação publicada com **GitHub Pages**. Foi desenvolvido como entrega intermediária do **Bootcamp I** (Ciência da Computação, UniCEUB).
 
-**Página publicada:** https://leonardosette.github.io/Portifolio/
+**Página publicada:** https://leonardosette.github.io/Portfolio/
 
 ## Sobre
 
