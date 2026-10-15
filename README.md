@@ -23,7 +23,7 @@ Sou Leonardo Sette Tôrres de Oliveira, estudante de Ciência da Computação no
 ## Estrutura do repositório
 
 ```
-Portifolio/
+Portfolio/
 ├── index.html      # estrutura da página
 ├── css/
 │   └── style.css   # estilos e tema claro/escuro
