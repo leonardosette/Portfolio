@@ -44,11 +44,11 @@ Portifolio/
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/leonardosette/Portifolio.git
+   git clone https://github.com/leonardosette/Portfolio.git
    ```
 2. Entre na pasta:
    ```bash
-   cd Portifolio
+   cd Portfolio
    ```
 3. Abra o arquivo `index.html` no navegador, ou use a extensão Live Server do VS Code.
 
