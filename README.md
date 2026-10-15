@@ -85,4 +85,4 @@ A página é servida pelo GitHub Pages a partir da branch `main`, na pasta raiz.
 ## Contato
 
 - GitHub: [@leonardosette](https://github.com/leonardosette)
-- LinkedIn: [adicione aqui o link do seu perfil]
+- LinkedIn: [(https://www.linkedin.com/in/leonardo-sette-7843a9422/)]
