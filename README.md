@@ -24,12 +24,20 @@ Sou Leonardo Sette Tôrres de Oliveira, estudante de Ciência da Computação no
 
 ```
 Portfolio/
-├── index.html      # estrutura da página
+├── index.html              # estrutura da página
 ├── css/
-│   └── style.css   # estilos e tema claro/escuro
+│   └── style.css           # estilos e tema claro/escuro
 ├── js/
-│   └── main.js     # lista de projetos, tema claro/escuro e vídeo
-└── README.md       # este arquivo
+│   └── main.js             # lista de projetos, tema claro/escuro e vídeo
+├── docs/
+│   ├── configuracao-seguranca-acesso.md
+│   └── testes.md
+├── .github/
+│   └── pull_request_template.md
+├── SECURITY.md             # política de segurança
+├── CONTRIBUTING.md         # guia de colaboração
+├── .gitignore
+└── README.md               # este arquivo
 ```
 
 ## Tecnologias
@@ -71,6 +79,22 @@ git commit -m "feat: adiciona novo projeto"
 git push
 ```
 
+## Segurança e colaboração
+
+O repositório segue práticas de segurança e controle de acesso:
+
+- Branch `main` protegida: alterações entram por **pull request**.
+- Autenticação em dois fatores na conta do responsável.
+- Alertas do Dependabot, secret scanning e push protection ativados.
+- Permissões por papel, seguindo o princípio do menor privilégio.
+
+Mais detalhes:
+
+- [Política de segurança](SECURITY.md)
+- [Guia de colaboração](CONTRIBUTING.md)
+- [Configuração de segurança e acesso](docs/configuracao-seguranca-acesso.md)
+- [Checklist de testes](docs/testes.md)
+
 ## Publicação
 
 A página é servida pelo GitHub Pages a partir da branch `main`, na pasta raiz. Para ativar: **Settings → Pages → Branch: `main` → `/ (root)` → Save**.
@@ -80,7 +104,7 @@ A página é servida pelo GitHub Pages a partir da branch `main`, na pasta raiz.
 - HTML, CSS e JavaScript em arquivos separados.
 - HTML semântico e página responsiva, com suporte a tema claro e escuro.
 - Um repositório por projeto, com README próprio em cada um.
-- Commits com mensagens curtas e descritivas.
+- Commits com mensagens curtas e descritivas, em pull requests revisados.
 
 ## Contato
 
