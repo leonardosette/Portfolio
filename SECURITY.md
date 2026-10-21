@@ -1,6 +1,6 @@
 # Política de Segurança
 
-Este documento descreve como a segurança do repositório **Portifolio** é tratada e como reportar problemas.
+Este documento descreve como a segurança do repositório **Portfolio** é tratada e como reportar problemas.
 
 ## Versões com suporte
 
